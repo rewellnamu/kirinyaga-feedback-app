@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator, Image, TouchableOpacity, Platform, ImageBackground, Dimensions, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator, Dimensions, Platform, ScrollView, ImageBackground, TouchableOpacity, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import api from '../api/api';
 
-const BACKGROUND_IMAGE = require('../assets/image.png');
 const { width } = Dimensions.get('window');
+const BACKGROUND_IMAGE = require('../assets/image.png');
 
 export default function ReportFormScreen({ navigation }) {
   const [title, setTitle] = useState('');
@@ -13,11 +13,12 @@ export default function ReportFormScreen({ navigation }) {
   const [category, setCategory] = useState('Roads');
   const [ward, setWard] = useState('');
   const [contact, setContact] = useState('');
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState(null); // store image object
   const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Pick image from device
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -29,6 +30,7 @@ export default function ReportFormScreen({ navigation }) {
     }
   };
 
+  // Upload image to backend
   const uploadImage = async () => {
     if (!image) return '';
     const formData = new FormData();
@@ -80,7 +82,7 @@ export default function ReportFormScreen({ navigation }) {
       console.log('Submitting payload:', payload);
       const res = await api.post('/reports', payload);
       Alert.alert('Success', 'Report submitted');
-      navigation.navigate('All Reports');
+      navigation.navigate('Home'); // changed from 'All Reports' to 'Home'
     } catch (err) {
       const backendMsg = err.response?.data?.message || JSON.stringify(err.response?.data) || err.message || 'Unknown error';
       setErrorMsg(backendMsg);
@@ -98,72 +100,72 @@ export default function ReportFormScreen({ navigation }) {
       resizeMode="cover"
       imageStyle={{ opacity: 0.18 }}
     >
-      <KeyboardAvoidingView
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-          <View style={styles.formWrapper}>
-            <Text style={styles.header}>Submit a Report</Text>
-            <TextInput
-              placeholder="Title"
-              value={title}
-              onChangeText={setTitle}
-              style={styles.input}
-              placeholderTextColor="#888"
-            />
-            <TextInput
-              placeholder="Description"
-              value={description}
-              onChangeText={setDescription}
-              style={[styles.input, styles.textArea]}
-              multiline
-              numberOfLines={4}
-              placeholderTextColor="#888"
-            />
-            <Picker
-              selectedValue={category}
-              onValueChange={setCategory}
-              style={styles.input}
-              itemStyle={{ fontSize: width < 400 ? 15 : 17 }}
-            >
-              <Picker.Item label="Roads" value="Roads" />
-              <Picker.Item label="Water" value="Water" />
-              <Picker.Item label="Security" value="Security" />
-              <Picker.Item label="Electricity" value="Electricity" />
-              <Picker.Item label="Other" value="Other" />
-            </Picker>
-            <TextInput
-              placeholder="Ward"
-              value={ward}
-              onChangeText={setWard}
-              style={styles.input}
-              placeholderTextColor="#888"
-            />
-            <TextInput
-              placeholder="Contact (optional)"
-              value={contact}
-              onChangeText={setContact}
-              style={styles.input}
-              placeholderTextColor="#888"
-            />
-            <TouchableOpacity style={styles.imagePicker} onPress={pickImage} activeOpacity={0.85}>
-              <Text style={styles.imagePickerText}>{image ? 'Change Image' : 'Pick an Image (optional)'}</Text>
-            </TouchableOpacity>
-            {image && (
-              <Image source={{ uri: image.uri }} style={styles.preview} />
-            )}
-            {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
-            {loading ? (
-              <ActivityIndicator size="large" color="#007bff" style={{ marginTop: 10 }} />
-            ) : (
-              <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} activeOpacity={0.85}>
-                <Text style={styles.submitButtonText}>Submit Report</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        <View style={styles.formWrapper}>
+          <Text style={styles.header}>Submit a Report</Text>
+          <TextInput
+            placeholder="Title"
+            value={title}
+            onChangeText={setTitle}
+            style={styles.input}
+            // Remove error clearing here
+          />
+          <TextInput
+            placeholder="Description"
+            value={description}
+            onChangeText={setDescription}
+            style={[styles.input, styles.textArea]}
+            multiline
+            // Remove error clearing here
+          />
+          <Picker
+            selectedValue={category}
+            onValueChange={setCategory}
+            style={styles.input}
+          >
+            <Picker.Item label="Roads" value="Roads" />
+            <Picker.Item label="Water" value="Water" />
+            <Picker.Item label="Security" value="Security" />
+            <Picker.Item label="Electricity" value="Electricity" />
+            <Picker.Item label="Health" value="Health" />
+            <Picker.Item label="Agriculture" value="Agriculture" />
+            <Picker.Item label="Other" value="Other" />
+          </Picker>
+          <TextInput
+            placeholder="Ward"
+            value={ward}
+            onChangeText={setWard}
+            style={styles.input}
+            // Remove error clearing here
+          />
+          <TextInput
+            placeholder="Contact (optional)"
+            value={contact}
+            onChangeText={setContact}
+            style={styles.input}
+            // Remove error clearing here
+          />
+          {/* Image upload UI */}
+          <TouchableOpacity style={styles.imagePicker} onPress={pickImage} activeOpacity={0.85}>
+            <Text style={styles.imagePickerText}>{image ? 'Change Image' : 'Pick an Image (optional)'}</Text>
+          </TouchableOpacity>
+          {image && (
+            <Image source={{ uri: image.uri }} style={styles.preview} />
+          )}
+          {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
+          {loading ? (
+            <ActivityIndicator size="large" color="#007bff" />
+          ) : (
+            <View style={styles.buttonWrapper}>
+              <Button title="Submit Report" onPress={handleSubmit} color="#007bff" />
+            </View>
+          )}
+        </View>
+      </ScrollView>
     </ImageBackground>
   );
 }
@@ -173,25 +175,31 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
+    position: 'absolute', // Ensure background covers the whole screen
+    top: 0,
+    left: 0,
   },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    minHeight: '100%',
     paddingVertical: 24,
+    // Remove backgroundColor here to avoid covering the image
   },
   formWrapper: {
     width: '100%',
     maxWidth: 440,
-    backgroundColor: 'rgba(255,255,255,0.97)',
-    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.98)', // keep for form contrast
+    borderRadius: 18,
     padding: width < 400 ? 18 : 28,
     shadowColor: '#007bff',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.09,
-    shadowRadius: 12,
-    elevation: 2,
+    shadowOpacity: 0.10,
+    shadowRadius: 14,
+    elevation: 3,
     alignSelf: 'center',
+    marginVertical: 24,
   },
   header: {
     fontSize: width < 400 ? 22 : 26,
@@ -204,9 +212,9 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: '#bbb',
-    padding: width < 400 ? 9 : 12,
-    marginBottom: 12,
-    borderRadius: 8,
+    padding: width < 400 ? 10 : 14,
+    marginBottom: 14,
+    borderRadius: 9,
     fontSize: width < 400 ? 15 : 17,
     backgroundColor: '#f8fafd',
     color: '#222',
@@ -214,11 +222,6 @@ const styles = StyleSheet.create({
   textArea: {
     minHeight: 70,
     textAlignVertical: 'top',
-  },
-  error: {
-    color: 'red',
-    marginBottom: 10,
-    textAlign: 'center',
   },
   imagePicker: {
     borderWidth: 1,
@@ -243,22 +246,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e0e0e0',
   },
-  submitButton: {
-    backgroundColor: '#007bff',
-    paddingVertical: width < 400 ? 13 : 16,
+  error: {
+    color: 'red',
+    marginBottom: 12,
+    textAlign: 'center',
+    fontSize: width < 400 ? 13 : 15,
+  },
+  buttonWrapper: {
     borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 6,
+    overflow: 'hidden',
+    marginTop: 8,
     shadowColor: '#007bff',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.13,
     shadowRadius: 8,
     elevation: 2,
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: width < 400 ? 16 : 18,
-    letterSpacing: 0.5,
   },
 });
