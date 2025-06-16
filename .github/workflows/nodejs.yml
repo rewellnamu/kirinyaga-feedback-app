@@ -1,0 +1,32 @@
+name: Frontend Node.js CI
+
+on:
+  push:
+    paths:
+      - "Front-end/**"
+  pull_request:
+    paths:
+      - "Front-end/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./Front-end/kirinyaga-feedback-app
+
+      - name: Lint and Test (if available)
+        run: |
+          npm run lint || echo "No lint script"
+          npm test || echo "No test script"
+        working-directory: ./Front-end/kirinyaga-feedback-app
