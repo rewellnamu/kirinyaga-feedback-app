@@ -26,19 +26,24 @@ export default function App() {
       <Stack.Navigator
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#fff',
+            backgroundColor: 'blue',
             borderBottomWidth: 0,
             shadowColor: 'transparent',
             elevation: 0,
           },
-          headerTintColor: '#007bff',
+          headerTintColor: '#ecedf0ff',
           headerTitleStyle: {
             fontWeight: 'bold',
-            fontSize: 21,
+            fontSize: 28,
             letterSpacing: 0.5,
+            fontFamily: 'Poppins',
+            border: 'dashed 5px #0a0303ff',
+            borderRadius: 10,
+            padding: 5,
           },
           contentStyle: {
-            backgroundColor: '#eaf0fb',
+            backgroundColor: '#010307ff',
+            
           },
         }}
       >
@@ -46,7 +51,7 @@ export default function App() {
           name="Home"
           component={HomeScreen}
           options={{
-            title: 'The Torch🚥🚦🚥🚦🚥',
+            title: 'County Arena',
             headerTitleAlign: 'center',
           }}
         />

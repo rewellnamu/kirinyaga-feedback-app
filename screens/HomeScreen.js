@@ -13,7 +13,7 @@ export default function HomeScreen({ navigation }) {
       imageStyle={{ opacity: 0.18 }}
     >
       <View style={styles.overlay}>
-        <Text style={styles.title}>Public Feedback</Text>
+        <Text style={styles.title}>Gumzo</Text>
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate('New Report')}
